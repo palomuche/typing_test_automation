@@ -25,3 +25,15 @@ Este é um programa em C# que automatiza o processo de realizar um teste de digi
 ## Configurações
 
 Você pode alterar a string de conexão do banco de dados no código-fonte.
+
+## Criação do Banco de Dados
+
+CREATE TABLE TypingScore (
+  Id SERIAL PRIMARY KEY,
+  Date TIMESTAMP,
+  WPM INT,
+  Keystrokes INT,
+  Accuracy FLOAT,
+  Correct_Words INT,
+  Wrong_Words INT
+)
