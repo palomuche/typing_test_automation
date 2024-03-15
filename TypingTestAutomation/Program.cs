@@ -88,13 +88,30 @@ class Program
         // String de conexão
         string connectionString = "Host=localhost;Username=postgres;Password=Teste@123;Database=TypingDB";
 
+
         using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
         {
             connection.Open();
+
+            // Verificar se a tabela TypingScore existe
+            using (NpgsqlCommand checkTableExistsCommand = new NpgsqlCommand("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'typingscore')", connection))
+            {
+                bool tableExists = (bool)checkTableExistsCommand.ExecuteScalar();
+
+                // Se a tabela não existir, criar a tabela
+                if (!tableExists)
+                {
+                    using (NpgsqlCommand createTableCommand = new NpgsqlCommand("CREATE TABLE typingscore ( Id SERIAL PRIMARY KEY, Date TIMESTAMP, WPM INT, Keystrokes INT, Accuracy FLOAT, Correct_Words INT, Wrong_Words INT )", connection))
+                    {
+                        createTableCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+
             using (NpgsqlCommand cmd = new NpgsqlCommand())
             {
                 cmd.Connection = connection;
-                cmd.CommandText = "INSERT INTO TypingScore (Date, WPM, Keystrokes, Accuracy, Correct_Words, Wrong_Words) VALUES (@date, @wpm, @keystrokes, @accuracy, @correctWords, @wrongWords)";
+                cmd.CommandText = "INSERT INTO typingscore (Date, WPM, Keystrokes, Accuracy, Correct_Words, Wrong_Words) VALUES (@date, @wpm, @keystrokes, @accuracy, @correctWords, @wrongWords)";
                 cmd.Parameters.AddWithValue("@date", DateTime.Now);
                 cmd.Parameters.AddWithValue("@wpm", wpmValue);
                 cmd.Parameters.AddWithValue("@keystrokes", keystrokesValue);
